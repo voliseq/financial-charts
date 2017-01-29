@@ -68,6 +68,7 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function ($http) {
     var xAxis2 = d3.axisBottom(x2);
     var yAxis = d3.axisLeft(y);
 
+
     var line = d3.line()
         .x(function (d) {
             return x(dateParser(d.Date));
@@ -82,134 +83,139 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function ($http) {
         .y(function (d) {
             return y2(d.Close)
         });
-    // var brush = d3.brushX()
-    //     .extent([[0, 0], [width, height2]])
-    //     .on("brush end", brushed);
-    //
-    // var zoom = d3.zoom()
-    //     .scaleExtent([1, Infinity])
-    //     .translateExtent([[0, 0], [width, height]])
-    //     .extent([[0, 0], [width, height]])
-    //     .on("zoom", zoomed);
+    var brush = d3.brushX()
+        .extent([[0, 0], [width, height2]])
+        .on("brush end", brushed);
+
+    function brushed() {
+        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+        var s = d3.event.selection || x2.range();
+        x.domain(s.map(x2.invert, x2));
+        chart.select(".x.axis").call(xAxis);
+        svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+            .scale(width / (s[1] - s[0]))
+            .translate(-s[0], 0));
+        plot();
+    }
+
+    var zoom = d3.zoom()
+        .scaleExtent([1, Infinity])
+        .translateExtent([[0, 0], [width, height]])
+        .extent([[0, 0], [width, height]])
+        .on("zoom", zoomed);
+    function zoomed() {
+        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+        var t = d3.event.transform;
+        x.domain(t.rescaleX(x2).domain());
+        var paths = chart.selectAll("path")._groups[0];
+        chart.select(".x.axis").call(xAxis);
+        context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+        plot();
+    }
 
     //draw
-    svg.append("defs").append("clipPath")
-        .attr("id", "clip")
-        .append("rect")
-        .attr("width", width)
-        .attr("height", height);
+    var plot = function(){
+        svg.append("defs").append("clipPath")
+            .attr("id", "clip")
+            .append("rect")
+            .attr("width", width)
+            .attr("height", height);
 
-    //enter company
-    chart.selectAll('.company')
-        .data(symbols)
-        .enter()
-        .append("g")
-        .attr("class", function(d){
-            return d;
-        })
-        .classed("company", true);
-    context.selectAll('.company')
-        .data(symbols)
-        .enter()
-        .append("g")
-        .attr("class", function(d){
-            return d;
-        })
-        .classed("company", true);
-    //update company
-    context.selectAll(".company")
-        .style("fill", function(d,i){
-            return colorScale(i)
-        });
-    console.log(context.selectAll("path"));
-    chart.selectAll(".company")
-        .style("fill", function(d,i){
-            return colorScale(i)
-        });
 
-    symbols.forEach(function (symbol) {
-        var g = chart.selectAll("g."+symbol);
-        var arr = data.filter(function (elem) {
-            return elem.Symbol == symbol;
-        });
-        //enter
-        g.selectAll(".trendline")
-            .data([arr])
+        //enter company
+        chart.selectAll('.company')
+            .data(symbols)
             .enter()
-            .append("path")
-            .classed("trendline", true);
-
-        g.selectAll(".point")
-            .data(arr)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", 2);
-
-        //update
-        g.selectAll(".trendline")
-            .attr("d", function(d){
-                return line(d);
-            });
-        g.selectAll(".point")
-            .attr("cx", function (d) {
-                return x(dateParser(d.Date));
+            .append("g")
+            .attr("class", function(d){
+                return d;
             })
-            .attr("cy", function (d) {
-                return y(d.Close);
-            });
-
-        //exit
-        g.selectAll(".trendline")
-            .data([arr])
-            .exit()
-            .remove();
-
-        g.selectAll(".point")
-            .data(arr)
-            .exit()
-            .remove();
-    });
-    symbols.forEach(function (symbol) {
-        var g = context.selectAll("g."+symbol);
-        var arr = data.filter(function (elem) {
-            return elem.Symbol == symbol;
-        });
-        //enter
-        g.selectAll(".trendline")
-            .data([arr])
+            .classed("company", true);
+        context.selectAll('.company')
+            .data(symbols)
             .enter()
-            .append("path")
-            .classed("trendline", true);
-
-        g.selectAll(".point")
-            .data(arr)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", 2);
-        //update
-        g.selectAll(".trendline")
-            .attr("d", function(d){
-                return line2(d);
-            });
-        g.selectAll(".point")
-            .attr("cx", function (d) {
-                return x2(dateParser(d.Date));
+            .append("g")
+            .attr("class", function(d){
+                return d;
             })
-            .attr("cy", function (d) {
-                return y2(d.Close);
+            .classed("company", true);
+        //update company
+        context.selectAll(".company")
+            .style("fill", function(d,i){
+                return colorScale(i)
             });
-        //exit
-        g.selectAll(".trendline")
-            .data([arr])
-            .exit()
-            .remove();
-        g.selectAll(".point")
-            .data(arr)
-            .exit()
-            .remove();
-    });
+        console.log(context.selectAll("path"));
+        chart.selectAll(".trandline")
+            .style("stroke", function(d,i){
+                return colorScale(i)
+            });
+
+        symbols.forEach(function (symbol) {
+            var g = chart.selectAll("g."+symbol);
+            var arr = data.filter(function (elem) {
+                return elem.Symbol == symbol;
+            });
+            //enter
+            g.selectAll(".trendline")
+                .data([arr])
+                .enter()
+                .append("path")
+                .classed("trendline", true);
+
+
+
+            //update
+            g.selectAll(".trendline")
+                .attr("d", function(d){
+                    return line(d);
+                });
+
+
+            //exit
+            g.selectAll(".trendline")
+                .data([arr])
+                .exit()
+                .remove();
+
+            g.selectAll(".point")
+                .data(arr)
+                .exit()
+                .remove();
+        });
+        symbols.forEach(function (symbol) {
+            var g = context.selectAll("g."+symbol);
+            var arr = data.filter(function (elem) {
+                return elem.Symbol == symbol;
+            });
+            //enter
+            g.selectAll(".trendline")
+                .data([arr])
+                .enter()
+                .append("path")
+                .classed("trendline", true);
+
+
+            //update
+            g.selectAll(".trendline")
+                .attr("d", function(d){
+                    return line2(d);
+                });
+            g.selectAll(".point")
+                .attr("cx", function (d) {
+                    return x2(dateParser(d.Date));
+                })
+                .attr("cy", function (d) {
+                    return y2(d.Close);
+                });
+            //exit
+            g.selectAll(".trendline")
+                .data([arr])
+                .exit()
+                .remove();
+
+        });
+    };
+    plot();
 
 
     // draw axes
@@ -230,6 +236,17 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function ($http) {
         .call(xAxis2);
     //
 
+    context.append("g")
+        .attr("class", "brush")
+        .call(brush)
+        .call(brush.move, x.range());
+
+    svg.append("rect")
+        .attr("class", "zoom")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .call(zoom);
 
 
 }]);
