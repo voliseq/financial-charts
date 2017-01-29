@@ -5,16 +5,12 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function ($http) {
 
     var data = rawData.query.results.quote;
     var symbols = [];
-
     data.map(function (elem) {
         if (symbols.indexOf(elem.Symbol) == -1) {
             symbols.push(elem.Symbol);
         }
     });
-
-
-    console.log(symbols);
-    var w = 800;
+    var v = 800;
     var h = 450;
     var margin = {
         top: 58,
@@ -22,12 +18,13 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function ($http) {
         left: 80,
         right: 40
     };
-    var width = w - margin.left - margin.right;
+
+    var width = v - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
 
     var svg = d3.select("body").append("svg")
         .attr("id", "chart")
-        .attr("width", w)
+        .attr("width", v)
         .attr("height", h);
 
     var chart = svg.append("g")
@@ -35,120 +32,110 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function ($http) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var dateParser = d3.timeParse("%Y-%m-%d");
+    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
     var x = d3.scaleTime()
         .domain(d3.extent(data, function (d) {
             return dateParser(d.Date);
         }))
         .range([0, width]);
 
-
     var y = d3.scaleLinear()
-        .domain([0, d3.max(data, function (d) {
+        .domain([0, d3.max(data, function(d){
             return d.Close;
         })])
         .range([height, 0]);
 
-    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-    var xAxis = d3.axisBottom(x)
-        .ticks(d3.timeMonth, 1)
-        .tickFormat(d3.timeFormat("%B"));
-
-    var yAxis = d3.axisLeft(y)
-        .ticks(5);
+    var xAxis = d3.axisBottom(x);
+    var yAxis = d3.axisLeft(y);
 
     var line = d3.line()
         .x(function (d) {
-            var date = dateParser(d.Date);
-            return x(date);
+            return x(dateParser(d.Date));
         })
         .y(function (d) {
             return y(d.Close)
+    });
+
+    //draw line
+
+    //enter company
+    chart.selectAll('.company')
+        .data(symbols)
+        .enter()
+        .append("g")
+        .attr("class", function(d){
+            return d;
+        })
+        .classed("company", true);
+
+    //update company
+    chart.selectAll(".company")
+        .style("fill", function(d,i){
+            return colorScale(i)
         });
 
-    function drawAxis(params) {
-        this.append("g")
-            .classed("x axis", true)
-            .attr("transform", "translate(0," + height + ")")
-            .call(params.axis.x);
-        this.append("g")
-            .classed("y axis", true)
-            .attr("transform", "translate(0,0)")
-            .call(params.axis.y);
-    }
+    symbols.forEach(function (symbol) {
+        var g = chart.selectAll("g."+symbol);
+        var arr = data.filter(function (elem) {
+            return elem.Symbol == symbol;
+        });
 
-    function plot(params) {
-        drawAxis.call(this, params);
-        var self = this;
-
-
-        // enter for <g>
-        this.selectAll(".company")
-            .data(symbols)
+        //enter
+        g.selectAll(".trendline")
+            .data([arr])
             .enter()
-            .append("g")
-            .attr("class", function (d) {
-                return d;
+            .append("path")
+            .classed("trendline", true);
+
+        g.selectAll(".point")
+            .data(arr)
+            .enter()
+            .append("circle")
+            .classed("point", true)
+            .attr("r", 2);
+
+        //update
+        g.selectAll(".trendline")
+            .attr("d", function(d){
+                return line(d);
+            });
+        g.selectAll(".point")
+            .attr("cx", function (d) {
+                return x(dateParser(d.Date));
             })
-            .classed("company", true);
-
-        //update fo <g>
-        this.selectAll(".company")
-            .style('fill', function(d,i){
-            return colorScale(i);
-        });
-
-        symbols.forEach(function (symbol) {
-
-            var g = self.selectAll("g." + symbol);
-            var arr = data.filter(function (elem) {
-                return elem.Symbol == symbol
+            .attr("cy", function (d) {
+                return y(d.Close);
             });
 
-            // enter
-            g.selectAll(".trendline")
-                .data([arr])
-                .enter()
-                .append("path")
-                .classed("trendline", true);
-            g.selectAll(".point")
-                .data(arr)
-                .enter()
-                .append("circle")
-                .classed("point", true)
-                .attr("r", 2);
-            //update
-            g.selectAll(".trendline")
-                .attr("d", function (d) {
-                    return line(d);
-                });
-            g.selectAll(".point")
-                .attr("cx", function (d) {
-                    var date = dateParser(d.Date);
-                    return x(date);
-                })
-                .attr("cy", function (d) {
-                    return y(d.Close);
-                });
-            //exit()
-            g.selectAll(".trendline")
-                .data([arr])
-                .exit()
-                .remove();
-            g.selectAll(".point")
-                .data(arr)
-                .exit()
-                .remove();
-        });
+        //exit
+        g.selectAll(".trendline")
+            .data([arr])
+            .exit()
+            .remove();
 
+        g.selectAll(".point")
+            .data(arr)
+            .exit()
+            .remove();
 
-    }
-
-    plot.call(chart, {
-        data: data,
-        axis: {
-            x: xAxis,
-            y: yAxis
-        }
     });
+
+
+
+    // draw axes
+
+    chart.append("g")
+        .classed("x axis", true)
+        .attr("transform", "translate(0, "+height+")")
+        .call(xAxis);
+
+    chart.append("g")
+        .classed("y axis", true)
+        .attr("transform", "translate(0,0)")
+        .call(yAxis);
+
+    //
+
+
+
 }]);
