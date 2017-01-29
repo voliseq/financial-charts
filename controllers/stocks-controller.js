@@ -1,13 +1,13 @@
 /**
  * Created by voliseq on 28.01.2017.
  */
-var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function($http){
+var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function ($http) {
 
     var data = rawData.query.results.quote;
     var symbols = [];
 
-    data.map(function(elem){
-        if(symbols.indexOf(elem.Symbol) == -1){
+    data.map(function (elem) {
+        if (symbols.indexOf(elem.Symbol) == -1) {
             symbols.push(elem.Symbol);
         }
     });
@@ -36,17 +36,19 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function($http){
 
     var dateParser = d3.timeParse("%Y-%m-%d");
     var x = d3.scaleTime()
-        .domain(d3.extent(data, function(d){
+        .domain(d3.extent(data, function (d) {
             return dateParser(d.Date);
         }))
-        .range([0,width]);
+        .range([0, width]);
 
 
     var y = d3.scaleLinear()
-        .domain([0, d3.max(data, function(d){
+        .domain([0, d3.max(data, function (d) {
             return d.Close;
         })])
-        .range([height,0]);
+        .range([height, 0]);
+
+    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
     var xAxis = d3.axisBottom(x)
         .ticks(d3.timeMonth, 1)
@@ -56,15 +58,15 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function($http){
         .ticks(5);
 
     var line = d3.line()
-        .x(function(d){
+        .x(function (d) {
             var date = dateParser(d.Date);
             return x(date);
         })
-        .y(function(d){
+        .y(function (d) {
             return y(d.Close)
         });
 
-    function drawAxis(params){
+    function drawAxis(params) {
         this.append("g")
             .classed("x axis", true)
             .attr("transform", "translate(0," + height + ")")
@@ -74,29 +76,36 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function($http){
             .attr("transform", "translate(0,0)")
             .call(params.axis.y);
     }
-    function plot(params){
+
+    function plot(params) {
         drawAxis.call(this, params);
         var self = this;
 
-        this.selectAll(".companies")
+
+        // enter for <g>
+        this.selectAll(".company")
             .data(symbols)
             .enter()
-                .append("g")
-                .attr("class", function(d){
-                    return d;
-                })
-                .classed("company", true);
-        //enter()
+            .append("g")
+            .attr("class", function (d) {
+                return d;
+            })
+            .classed("company", true);
+
+        //update fo <g>
+        this.selectAll(".company")
+            .style('fill', function(d,i){
+            return colorScale(i);
+        });
 
         symbols.forEach(function (symbol) {
 
-            var g = self.selectAll("g."+symbol);
-            var arr = data.filter(function(elem){
+            var g = self.selectAll("g." + symbol);
+            var arr = data.filter(function (elem) {
                 return elem.Symbol == symbol
             });
 
-            console.log(arr);
-
+            // enter
             g.selectAll(".trendline")
                 .data([arr])
                 .enter()
@@ -108,20 +117,20 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function($http){
                 .append("circle")
                 .classed("point", true)
                 .attr("r", 2);
-            // //update
+            //update
             g.selectAll(".trendline")
-                .attr("d", function(d){
+                .attr("d", function (d) {
                     return line(d);
                 });
             g.selectAll(".point")
-                .attr("cx", function(d){
+                .attr("cx", function (d) {
                     var date = dateParser(d.Date);
                     return x(date);
                 })
-                .attr("cy", function(d){
+                .attr("cy", function (d) {
                     return y(d.Close);
                 });
-            // //exit()
+            //exit()
             g.selectAll(".trendline")
                 .data([arr])
                 .exit()
@@ -134,6 +143,7 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$http', function($http){
 
 
     }
+
     plot.call(chart, {
         data: data,
         axis: {
