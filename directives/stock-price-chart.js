@@ -11,12 +11,12 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
         },
         link: function (scope, elem, attrs) {
             var data = scope.chartData.data;
-            var v = 960,
-                h = 600,
+            var v = 800,
+                h = 500,
                 margin = {
-                    top: 20,
-                    bottom: 150,
-                    left: 40,
+                    top: 70,
+                    bottom: 100,
+                    left: 80,
                     right: 20
                 };
 
@@ -62,11 +62,34 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                 this.append("g")
                     .classed("axis x", true)
                     .attr("transform", "translate(0," + height + ")")
-                    .call(params.axis.x);
+                    .call(params.axis.x)
+                    .selectAll("text")
+                    .classed("x-axis-label", true)
+                    .style("text-anchor", "end")
+                    .attr("dx", -8)
+                    .attr("dy", 8)
+                    .attr("transform", "translate(0,0) rotate(-45)");
+                //This is the x label
+                this.select(".x.axis")
+                    .append("text")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .style("text-anchor", "middle")
+                    .attr("transform", "translate(" + width/2 + ",80)")
+                    .text("Time");
+
                 this.append("g")
                     .classed("axis y", true)
                     .attr("transform", "translate(0,0)")
                     .call(params.axis.y);
+                //This is the y label
+                this.select(".y.axis")
+                    .append("text")
+                    .attr("x", 0)
+                    .attr("y", 0)
+                    .style("text-anchor", "middle")
+                    .attr("transform", "translate(-50," + height/2 + ") rotate(-90)")
+                    .text("Price ($)");
             }
 
             function plot(params) {
@@ -88,14 +111,21 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     })
                     .classed("company", true);
 
+                this.selectAll("company")
+                    .attr("class", function (d) {
+                        return d;
+                    });
 
-                symbols.forEach(function (symbol) {
+                this.selectAll("company")
+                    .data(symbols)
+                    .exit()
+                    .remove()
+
+                symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);
                     var arr = params.data.filter(function (elem) {
                         return elem.Symbol == symbol;
                     });
-                    console.log(arr);
-
                     //enter trendline
                     g.selectAll(".trendline")
                         .data([arr])
@@ -107,18 +137,26 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     g.selectAll(".trendline")
                         .attr("d", function (d) {
                             return params.line(d);
-                        });
+                        })
+                        .style("stroke", function (d,i) {
+                            return colorScale(index);
+                        })
                     //exit trendline
                     g.selectAll(".trendline")
                         .data([arr])
                         .exit()
                         .remove();
 
-                })
-                this.selectAll(".trendline")
-                    .style("stroke", function (d,i) {
-                        return colorScale(i);
-                    })
+                    g.append("text")
+                        .attr("transform", "translate("+(width-30)+","+y(arr[arr.length -1].Close)+")")
+                        .attr("dy", ".35em")
+                        .attr("text-anchor", "start")
+                        .classed("label", true)
+                        .style("fill", function (d,i) {
+                            return colorScale(index);
+                        })
+                        .text(symbol);
+                });
             }
 
             plot.call(chart, {
@@ -127,7 +165,8 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     x: xAxis,
                     y: yAxis
                 },
-                line: line
+                line: line,
+                initialize: true
             })
 
         }

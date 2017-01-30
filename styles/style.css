@@ -49,3 +49,11 @@ body,html{
     fill: none;
     pointer-events: all;
 }
+text{
+
+    fill: black;
+    font-size: 16px;
+}
+.label{
+    cursor: pointer;
+}
