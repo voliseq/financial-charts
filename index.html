@@ -9,9 +9,23 @@
 </head>
 <body ng-app="stocks" ng-controller="stocksCtrl">
     <div class="container-fluid" id="container">
+        <div class="row" id="datePickerRow">
+            <div class="col col-sm-6">
+                <div style="display:inline-block; min-height:290px;">
+                    <div uib-datepicker ng-model="startDate" ng-change="selectMin(startDate)" class="well well-sm" datepicker-options="options"></div>
+                </div>
+            </div>
+            <div class="col col-sm-6">
+                <div style="display:inline-block; min-height:290px;">
+                    <div uib-datepicker ng-model="endDate" ng-change="selectMax(endDate)" class="well well-sm" datepicker-options="options"></div>
+                </div>
+            </div>
+        </div>
         <div class="row" id="chartsRow">
+            <div class="col col-xs-12">
+                <stock-price-chart chart-data="chartData"></stock-price-chart>
+            </div>
             <!--<stock-chart chart-data="chartData"></stock-chart>-->
-            <stock-price-chart chart-data="chartData"></stock-price-chart>
         </div>
     </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.4.4/d3.js"></script>

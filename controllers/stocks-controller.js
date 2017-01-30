@@ -3,25 +3,30 @@
  */
 var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
 
-    $scope.chartData = {};
-    $scope.chartData.data = rawData.query.results.quote;
+    $scope.rawData = rawData.query.results.quote;
 
-    $scope.elo = "siemano";
+    var dateParser = d3.timeParse("%Y-%m-%d");
+    var dates = $scope.rawData.map(function (elem) {
+        return dateParser(elem.Date);
+    });
 
-    $scope.tabs = [
-        { title:'Dynamic Title 1', content:'Dynamic content 1' },
-        { title:'Dynamic Title 2', content:'Dynamic content 2' }
-    ];
+    $scope.startDate = new Date(Math.min.apply(null, dates));
+    $scope.endDate = new Date(Math.max.apply(null, dates));
+    $scope.stockData = rawData.query.results.quote;
 
-    $scope.alertMe = function() {
-        setTimeout(function() {
-            $window.alert('You\'ve selected the alert tab!');
-        });
+    $scope.chartData = {startData: $scope.startDate, endData: $scope.endDate, data: $scope.rawData};
+
+
+
+
+
+
+    $scope.options = {
+        minDate: $scope.startDate,
+        maxDate: $scope.endDate
     };
-
-    $scope.model = {
-        name: 'Tabs'
-    };
-
+    $scope.selectMin = function (date) {
+        console.log(date);
+    }
 
 }]);
