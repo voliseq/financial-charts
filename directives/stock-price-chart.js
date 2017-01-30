@@ -15,7 +15,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                 h = 500,
                 margin = {
                     top: 70,
-                    bottom: 100,
+                    bottom: 150,
                     left: 80,
                     right: 20
                 };
@@ -58,7 +58,6 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
 
 
             function drawAxis(params) {
-                console.log(this);
                 this.append("g")
                     .classed("axis x", true)
                     .attr("transform", "translate(0," + height + ")")
@@ -75,7 +74,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     .attr("x", 0)
                     .attr("y", 0)
                     .style("text-anchor", "middle")
-                    .attr("transform", "translate(" + width/2 + ",80)")
+                    .attr("transform", "translate(" + width / 2 + ",80)")
                     .text("Time");
 
                 this.append("g")
@@ -88,7 +87,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     .attr("x", 0)
                     .attr("y", 0)
                     .style("text-anchor", "middle")
-                    .attr("transform", "translate(-50," + height/2 + ") rotate(-90)")
+                    .attr("transform", "translate(-50," + height / 2 + ") rotate(-90)")
                     .text("Price ($)");
             }
 
@@ -119,7 +118,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                 this.selectAll("company")
                     .data(symbols)
                     .exit()
-                    .remove()
+                    .remove();
 
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);
@@ -138,7 +137,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                         .attr("d", function (d) {
                             return params.line(d);
                         })
-                        .style("stroke", function (d,i) {
+                        .style("stroke", function (d, i) {
                             return colorScale(index);
                         })
                     //exit trendline
@@ -148,14 +147,22 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                         .remove();
 
                     g.append("text")
-                        .attr("transform", "translate("+(width-30)+","+y(arr[arr.length -1].Close)+")")
+                        .attr("transform", "translate(" + (0 + index*80) + "," + (height + 110) + ")")
                         .attr("dy", ".35em")
                         .attr("text-anchor", "start")
-                        .classed("label", true)
-                        .style("fill", function (d,i) {
+                        .classed("label "+symbol, true)
+                        .style("fill", function (d, i) {
                             return colorScale(index);
                         })
-                        .text(symbol);
+                        .text(symbol)
+                        .on("click", function(ele){
+                            console.log(ele);
+
+                        var path = d3.select(".company."+symbol +" path");
+                            console.log(parseInt(path.style("opacity")), typeof(parseInt(path.style("opacity"))));
+
+                            parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
+                    })
                 });
             }
 
@@ -167,7 +174,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                 },
                 line: line,
                 initialize: true
-            })
+            });
 
         }
     }
