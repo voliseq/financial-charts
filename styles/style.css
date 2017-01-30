@@ -5,7 +5,10 @@ body,html{
     font-size: 0.95em;
     text-align: center;
 }
-#chart{
+#container{
+    padding: 20px;
+}
+#chart, #priceTime{
     background-color: #F5F2EB;
     border: 1px solid #CCC;
 }
