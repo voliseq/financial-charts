@@ -10,7 +10,6 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
             chartData: "="
         },
         link: function (scope, elem, attrs) {
-
             var data = scope.chartData.data;
             var v = 800,
                 h = 500,
@@ -38,7 +37,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
             var colorScale = d3.scaleOrdinal(d3.schemeCategory10),
                 x = d3.scaleTime()
                     .domain(d3.extent(data, function (d) {
-                        return dateParser(d.Date);
+                        return d.Date;
                     }))
                     .range([0, width]),
                 y = d3.scaleLinear()
@@ -51,7 +50,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
 
             var line = d3.line()
                 .x(function (d) {
-                    return x(dateParser(d.Date));
+                    return x(d.Date);
                 })
                 .y(function (d) {
                     return y(d.Close);

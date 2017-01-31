@@ -11,10 +11,10 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
             stockData: "="
         },
         link: function (scope, elem, attrs) {
-            var data = scope.chartData.data;
+            var data = scope.chartData;
             var o = stockService.o;
 
-            function changeCompany(d){
+            function changeCompany(d) {
                 scope.$apply(function () {
                     scope.stockData = stockService.changeCompany(data, d);
                 })
@@ -30,10 +30,10 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                 .attr("transform", "translate(" + o.margin.left + "," + o.margin.top + ")");
 
             var x = d3.scaleTime()
-                .domain(d3.extent(data, function (d) {
-                    return o.dateParser(d.Date);
-                }))
-                .range([0, o.width]),
+                    .domain(d3.extent(data, function (d) {
+                        return d.Date;
+                    }))
+                    .range([0, o.width]),
                 y = d3.scaleLinear()
                     .domain([0, d3.max(data, function (d) {
                         return d.Close;
@@ -61,7 +61,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         return d;
                     })
                     .classed("company", true)
-                    .on("click", function(d){
+                    .on("click", function (d) {
                         changeCompany(d);
                     });
 
@@ -76,7 +76,6 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                     arr[index] = params.data.filter(function (elem) {
                         return elem.Symbol == symbol;
                     });
-                    console.log(arr[index]);
                     //enter
                     g.selectAll(".point")
                         .data(arr[index])
@@ -88,7 +87,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                     //update
                     g.selectAll(".point")
                         .attr("cx", function (d) {
-                            var date = o.dateParser(d.Date);
+                            var date = d.Date;
                             return x(date);
                         })
                         .attr("cy", function (d) {
@@ -120,7 +119,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         });
 
                     g.selectAll(".point")
-                        .data(params.data)
+                        .data(arr[index])
                         .exit()
                         .remove();
 
@@ -153,8 +152,42 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                 width: o.width,
                 initialize: true
             });
-
+            plot.call(chart, {
+                data: data,
+                axis: {
+                    x: xAxis,
+                    y: yAxis
+                },
+                height: o.height,
+                width: o.width,
+                initialize: true
+            });
+            scope.$watch("chartData", function (newValue, oldValue) {
+                var x = d3.scaleTime()
+                        .domain(d3.extent(data, function (d) {
+                            return d.Date;
+                        }))
+                        .range([0, o.width]),
+                    y = d3.scaleLinear()
+                        .domain([0, d3.max(data, function (d) {
+                            return d.Close;
+                        })])
+                        .range([o.height, 0]);
+                var xAxis = d3.axisBottom(x),
+                    yAxis = d3.axisLeft(y);
+                plot.call(chart, {
+                    data: newValue,
+                    axis: {
+                        x: xAxis,
+                        y: yAxis
+                    },
+                    height: o.height,
+                    width: o.width,
+                    initialize: true
+                });
+            });
         }
+
     }
 
 }]);

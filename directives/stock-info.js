@@ -9,7 +9,6 @@ stocksApp.directive("stockInfo", ['$window', '$timeout', function ($window, $tim
             stockData: "="
         },
         link: function (scope, elem, attrs) {
-            console.log(scope.stockData);
         }
     }
 
