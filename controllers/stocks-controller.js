@@ -25,8 +25,11 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', funct
         minDate: $scope.startDate,
         maxDate: $scope.endDate
     };
-    $scope.selectMin = function (date) {
-        console.log(date);
-    }
+    $scope.selectMin = function (startDate) {
+        console.log(startDate);
+    };
 
+    $scope.selectMax = function(endDate){
+        console.log(endDate);
+    }
 }]);

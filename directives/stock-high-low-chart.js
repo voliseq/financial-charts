@@ -1,7 +1,7 @@
 /**
  * Created by voliseq on 30.01.2017.
  */
-stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window, $timeout) {
+stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($window, $timeout) {
     return {
         restrict: "E",
         templateUrl: 'templates/stock-price-chart.html',
@@ -48,15 +48,6 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
             var xAxis = d3.axisBottom(x),
                 yAxis = d3.axisLeft(y);
 
-            var line = d3.line()
-                .x(function (d) {
-                    return x(dateParser(d.Date));
-                })
-                .y(function (d) {
-                    return y(d.Close);
-                });
-
-
             function drawAxis(params) {
                 this.append("g")
                     .classed("axis x", true)
@@ -92,15 +83,15 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
             }
 
             function plot(params) {
-                drawAxis.call(this, params);
                 var self = this;
+                drawAxis.call(this, params);
+
                 var symbols = [];
                 params.data.map(function (elem) {
                     if (symbols.indexOf(elem.Symbol) == -1) {
                         symbols.push(elem.Symbol);
                     }
                 });
-
                 this.selectAll(".company")
                     .data(symbols)
                     .enter()
@@ -120,49 +111,92 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     .exit()
                     .remove();
 
+
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);
                     var arr = params.data.filter(function (elem) {
                         return elem.Symbol == symbol;
                     });
-                    //enter trendline
-                    g.selectAll(".trendline")
-                        .data([arr])
+                    //enter
+                    g.selectAll(".point")
+                        .data(arr)
                         .enter()
-                        .append("path")
-                        .classed("trendline", true);
+                        .append("circle")
+                        .classed("point", true)
+                        .attr("r", 4);
 
-                    //updatet rendline
-                    g.selectAll(".trendline")
-                        .attr("d", function (d) {
-                            return params.line(d);
+                    g.selectAll(".vline")
+                        .data(arr)
+                        .enter()
+                        .append("line")
+                        .classed("vline", true)
+                        .attr("r", 2);
+
+                    //update
+                    g.selectAll(".point")
+                        .attr("cx", function (d) {
+                            var date = dateParser(d.Date);
+                            return x(date);
                         })
-                        .style("stroke", function (d, i) {
+                        .attr("cy", function (d) {
+                            return y(d.Close);
+                        });
+
+                    g.selectAll(".vline")
+                        .attr("y1", function(d){
+                            y(d.High);
+                        })
+                        .attr("y2", function(d){
+                            y(d.Low);
+                        })
+                        .attr("x1", 500)
+                        .attr("x2", 500);
+
+                    g.selectAll(".line")
+                        .style("stroke", "black")
+                        .attr("cx1", function (d) {
+                            x(dateParser(d.Date))
+                        })
+                        .attr("cx2", function (d) {
+                            x(dateParser(d.Date))
+                        })
+                        .attr("cy1", function (d) {
+                            y(dateParser(+d.High))
+                        })
+                        .attr("cy2", function (d) {
+                            y(dateParser(+d.Low))
+                        });
+                    //exit
+                    g.selectAll(".point")
+                        .style("fill", function (d, i) {
                             return colorScale(index);
                         });
-                    //exit trendline
-                    g.selectAll(".trendline")
-                        .data([arr])
+
+                    g.selectAll(".point")
+                        .data(params.data)
                         .exit()
                         .remove();
 
+
                     g.append("text")
-                        .attr("transform", "translate(" + (0 + index*80) + "," + (height + 110) + ")")
+                        .attr("transform", "translate(" + (0 + index * 80) + "," + (height + 110) + ")")
                         .attr("dy", ".35em")
                         .attr("text-anchor", "start")
-                        .classed("label "+symbol, true)
+                        .classed("label " + symbol, true)
                         .style("fill", function (d, i) {
                             return colorScale(index);
                         })
                         .text(symbol)
-                        .on("click", function(ele){
-                            console.log(ele);
-
-                        var path = d3.select(".company."+symbol +" path");
+                        .on("click", function () {
+                            console.log("elo");
+                            var path = d3.selectAll("g." + symbol + " .point");
                             console.log(path);
+                            console.log(parseInt(path.style("opacity")), typeof(parseInt(path.style("opacity"))));
                             parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
-                    })
+                        })
                 });
+
+
             }
 
             plot.call(chart, {
@@ -171,7 +205,6 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     x: xAxis,
                     y: yAxis
                 },
-                line: line,
                 initialize: true
             });
 
