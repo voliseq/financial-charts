@@ -16,10 +16,10 @@ stocksApp.service('stockService', [ function() {
         v: v,
         h: h,
         margin: {
-            top: 70,
-            bottom: 150,
-            left: 80,
-            right: 20
+            top: margin.top,
+            bottom: margin.bottom,
+            left: margin.left,
+            right: margin.right
         },
         width: v - margin.left - margin.right,
         height: h - margin.top - margin.bottom,
@@ -67,6 +67,8 @@ stocksApp.service('stockService', [ function() {
                 .classed("chart-header", true)
                 .attr("transform", "translate(0,-24)")
                 .text("");
-    }
+    };
+
+
 
 }]);

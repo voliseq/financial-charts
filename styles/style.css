@@ -60,10 +60,32 @@ text{
     cursor: pointer;
 }
 .stock-chart{
-    padding-bottom: 50px;
+    padding-bottom: 20px;
 }
 .point{
     shape-rendering: crispEdges;
     cursor: pointer;
     stroke: #000;
+}
+
+
+#stockInfo{
+    width: 900px;
+    height: 500px;
+    overflow-x: scroll;
+
+}
+table, th , td  {
+      border: 1px solid grey;
+      border-collapse: collapse;
+      padding: 5px;
+  }
+table tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+table tr:nth-child(even) {
+    background-color: #ffffff;
+}
+table td{
+    width: calc(800px/9);
 }
