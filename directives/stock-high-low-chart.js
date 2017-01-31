@@ -80,6 +80,12 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                     .style("text-anchor", "middle")
                     .attr("transform", "translate(-50," + height / 2 + ") rotate(-90)")
                     .text("Price ($)");
+                //chart header
+                this.append("g")
+                    .append("text")
+                    .classed("chart-header", true)
+                    .attr("transform", "translate(0,-24)")
+                    .text("");
             }
 
             function plot(params) {
@@ -102,35 +108,24 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                     .classed("company", true);
 
                 this.selectAll("company")
-                    .attr("class", function (d) {
-                        return d;
-                    });
-
-                this.selectAll("company")
                     .data(symbols)
                     .exit()
                     .remove();
 
-
+                var arr = [];
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);
-                    var arr = params.data.filter(function (elem) {
+                        arr[index] = params.data.filter(function (elem) {
                         return elem.Symbol == symbol;
                     });
+                    console.log(arr[index]);
                     //enter
                     g.selectAll(".point")
-                        .data(arr)
+                        .data(arr[index])
                         .enter()
                         .append("circle")
                         .classed("point", true)
                         .attr("r", 4);
-
-                    g.selectAll(".vline")
-                        .data(arr)
-                        .enter()
-                        .append("line")
-                        .classed("vline", true)
-                        .attr("r", 2);
 
                     //update
                     g.selectAll(".point")
@@ -140,32 +135,25 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                         })
                         .attr("cy", function (d) {
                             return y(d.Close);
+                        })
+                        .on("mouseover", function (d, i) {
+                            var info = arr[index][i];
+                            d3.select(this)
+                                .transition()
+                                .attr("r", 6);
+                            var str = "Company: " + info.Symbol;
+                            str += " High: " + info.High;
+                            str += " Low: " + info.Low;
+                            str += " Date: " + info.Date;
+                            d3.select(".chart-header").text(str);
+                        })
+                        .on("mouseout", function (d, i) {
+                            d3.select(this)
+                                .transition()
+                                .attr("r", 5);
+                            d3.select(".chart-header").text("");
                         });
 
-                    g.selectAll(".vline")
-                        .attr("y1", function(d){
-                            y(d.High);
-                        })
-                        .attr("y2", function(d){
-                            y(d.Low);
-                        })
-                        .attr("x1", 500)
-                        .attr("x2", 500);
-
-                    g.selectAll(".line")
-                        .style("stroke", "black")
-                        .attr("cx1", function (d) {
-                            x(dateParser(d.Date))
-                        })
-                        .attr("cx2", function (d) {
-                            x(dateParser(d.Date))
-                        })
-                        .attr("cy1", function (d) {
-                            y(dateParser(+d.High))
-                        })
-                        .attr("cy2", function (d) {
-                            y(dateParser(+d.Low))
-                        });
                     //exit
                     g.selectAll(".point")
                         .style("fill", function (d, i) {
@@ -190,12 +178,9 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                         .on("click", function () {
                             console.log("elo");
                             var path = d3.selectAll("g." + symbol + " .point");
-                            console.log(path);
-                            console.log(parseInt(path.style("opacity")), typeof(parseInt(path.style("opacity"))));
                             parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
                         })
                 });
-
 
             }
 

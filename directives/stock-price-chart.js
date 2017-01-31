@@ -159,7 +159,6 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                             console.log(ele);
 
                         var path = d3.select(".company."+symbol +" path");
-                            console.log(path);
                             parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
                     })
                 });
