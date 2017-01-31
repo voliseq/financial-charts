@@ -7,11 +7,18 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
         templateUrl: 'templates/stock-price-chart.html',
         replace: true,
         scope: {
-            chartData: "="
+            chartData: "=",
+            stockData: "="
         },
         link: function (scope, elem, attrs) {
             var data = scope.chartData.data;
             var o = stockService.o;
+
+            function changeCompany(d){
+                scope.$apply(function () {
+                    scope.stockData = stockService.changeCompany(data, d);
+                })
+            }
 
             var svg = d3.select(elem[0]).append("svg")
                 .attr("id", "priceTime")
@@ -53,7 +60,10 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                     .attr("class", function (d) {
                         return d;
                     })
-                    .classed("company", true);
+                    .classed("company", true)
+                    .on("click", function(d){
+                        changeCompany(d);
+                    });
 
                 this.selectAll("company")
                     .data(symbols)

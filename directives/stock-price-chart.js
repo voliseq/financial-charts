@@ -10,6 +10,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
             chartData: "="
         },
         link: function (scope, elem, attrs) {
+
             var data = scope.chartData.data;
             var v = 800,
                 h = 500,
@@ -156,8 +157,6 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                         })
                         .text(symbol)
                         .on("click", function(ele){
-                            console.log(ele);
-
                         var path = d3.select(".company."+symbol +" path");
                             parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
                     })

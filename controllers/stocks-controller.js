@@ -1,38 +1,24 @@
 /**
  * Created by voliseq on 28.01.2017.
  */
-var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
+var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout','stockService', function ($scope, $timeout, stockService) {
 
     $scope.rawData = rawData.query.results.quote;
-
-    $scope.selected = 1;
-
-    var dateParser = d3.timeParse("%Y-%m-%d");
+    var dateParser = stockService.o.dateParser;
     var dates = $scope.rawData.map(function (elem) {
         return dateParser(elem.Date);
     });
 
-    $scope.stockData = $scope.rawData.filter(function (elem) {
-        return elem.Symbol == "CSCO";
-    });
-    console.log($scope.stockData);
-    console.log("sdfds");
 
-    $timeout(function(){
-        $scope.stockData = $scope.rawData.filter(function (elem) {
-            return elem.Symbol == "MSFT";
-        });
-    }, 5000);
     $scope.startDate = new Date(Math.min.apply(null, dates));
     $scope.endDate = new Date(Math.max.apply(null, dates));
-    $scope.stockData = rawData.query.results.quote;
-
     $scope.chartData = {startData: $scope.startDate, endData: $scope.endDate, data: $scope.rawData};
-
-
-
-
-
+    $scope.selectCompany = function(company){
+        $scope.stockData = $scope.rawData.filter(function(elem){
+            return elem.Symbol == company;
+        });
+    };
+    $scope.selectCompany("CSCO");
 
     $scope.options = {
         minDate: $scope.startDate,

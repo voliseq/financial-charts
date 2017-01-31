@@ -29,6 +29,16 @@ stocksApp.service('stockService', [ function() {
     };
 
 
+    this.changeCompany = function(arr, symbol){
+        return arr.filter(function (elem) {
+            return elem.Symbol = symbol;
+        })
+    };
+
+    this.betweenDates = function(arr, startDate, endDate){
+
+    };
+
     this.drawAxes = function(params, header){
             this.append("g")
                 .classed("axis x", true)
@@ -68,6 +78,8 @@ stocksApp.service('stockService', [ function() {
                 .attr("transform", "translate(0,-24)")
                 .text("");
     };
+
+
 
 
 
