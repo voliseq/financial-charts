@@ -1,7 +1,7 @@
 /**
  * Created by voliseq on 30.01.2017.
  */
-stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($window, $timeout) {
+stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService', function ($window, $timeout, stockService) {
     return {
         restrict: "E",
         templateUrl: 'templates/stock-price-chart.html',
@@ -11,86 +11,34 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
         },
         link: function (scope, elem, attrs) {
             var data = scope.chartData.data;
-            var v = 800,
-                h = 500,
-                margin = {
-                    top: 70,
-                    bottom: 150,
-                    left: 80,
-                    right: 20
-                };
-
-            var width = v - margin.left - margin.right,
-                height = h - margin.top - margin.bottom;
+            var o = stockService.o;
 
             var svg = d3.select(elem[0]).append("svg")
                 .attr("id", "priceTime")
-                .attr("width", v)
-                .attr("height", h);
+                .attr("width", o.v)
+                .attr("height", o.h);
 
             var chart = svg.append("g")
                 .classed("display", true)
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .attr("transform", "translate(" + o.margin.left + "," + o.margin.top + ")");
 
-            var dateParser = d3.timeParse("%Y-%m-%d");
-
-            var colorScale = d3.scaleOrdinal(d3.schemeCategory10),
-                x = d3.scaleTime()
-                    .domain(d3.extent(data, function (d) {
-                        return dateParser(d.Date);
-                    }))
-                    .range([0, width]),
+            var x = d3.scaleTime()
+                .domain(d3.extent(data, function (d) {
+                    return o.dateParser(d.Date);
+                }))
+                .range([0, o.width]),
                 y = d3.scaleLinear()
                     .domain([0, d3.max(data, function (d) {
                         return d.Close;
                     })])
-                    .range([height, 0]);
+                    .range([o.height, 0]);
             var xAxis = d3.axisBottom(x),
                 yAxis = d3.axisLeft(y);
 
-            function drawAxis(params) {
-                this.append("g")
-                    .classed("axis x", true)
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(params.axis.x)
-                    .selectAll("text")
-                    .classed("x-axis-label", true)
-                    .style("text-anchor", "end")
-                    .attr("dx", -8)
-                    .attr("dy", 8)
-                    .attr("transform", "translate(0,0) rotate(-45)");
-                //This is the x label
-                this.select(".x.axis")
-                    .append("text")
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .style("text-anchor", "middle")
-                    .attr("transform", "translate(" + width / 2 + ",80)")
-                    .text("Time");
-
-                this.append("g")
-                    .classed("axis y", true)
-                    .attr("transform", "translate(0,0)")
-                    .call(params.axis.y);
-                //This is the y label
-                this.select(".y.axis")
-                    .append("text")
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .style("text-anchor", "middle")
-                    .attr("transform", "translate(-50," + height / 2 + ") rotate(-90)")
-                    .text("Price ($)");
-                //chart header
-                this.append("g")
-                    .append("text")
-                    .classed("chart-header", true)
-                    .attr("transform", "translate(0,-24)")
-                    .text("");
-            }
 
             function plot(params) {
                 var self = this;
-                drawAxis.call(this, params);
+                stockService.drawAxes.call(this, params, 1);
 
                 var symbols = [];
                 params.data.map(function (elem) {
@@ -115,7 +63,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                 var arr = [];
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);
-                        arr[index] = params.data.filter(function (elem) {
+                    arr[index] = params.data.filter(function (elem) {
                         return elem.Symbol == symbol;
                     });
                     console.log(arr[index]);
@@ -130,7 +78,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                     //update
                     g.selectAll(".point")
                         .attr("cx", function (d) {
-                            var date = dateParser(d.Date);
+                            var date = o.dateParser(d.Date);
                             return x(date);
                         })
                         .attr("cy", function (d) {
@@ -142,22 +90,23 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                                 .transition()
                                 .attr("r", 6);
                             var str = "Company: " + info.Symbol;
-                            str += " High: " + info.High;
-                            str += " Low: " + info.Low;
-                            str += " Date: " + info.Date;
+                            str += ", High: " + info.High;
+                            str += ", Low: " + info.Low;
+                            str += ", Volume: " + info.Volume;
+                            str += ", Date: " + info.Date;
                             d3.select(".chart-header").text(str);
                         })
                         .on("mouseout", function (d, i) {
                             d3.select(this)
                                 .transition()
-                                .attr("r", 5);
+                                .attr("r", 4);
                             d3.select(".chart-header").text("");
                         });
 
                     //exit
                     g.selectAll(".point")
                         .style("fill", function (d, i) {
-                            return colorScale(index);
+                            return o.colorScale(index);
                         });
 
                     g.selectAll(".point")
@@ -167,12 +116,12 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
 
 
                     g.append("text")
-                        .attr("transform", "translate(" + (0 + index * 80) + "," + (height + 110) + ")")
+                        .attr("transform", "translate(" + (0 + index * 80) + "," + (o.height + 110) + ")")
                         .attr("dy", ".35em")
                         .attr("text-anchor", "start")
                         .classed("label " + symbol, true)
                         .style("fill", function (d, i) {
-                            return colorScale(index);
+                            return o.colorScale(index);
                         })
                         .text(symbol)
                         .on("click", function () {
@@ -190,6 +139,8 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', function ($wind
                     x: xAxis,
                     y: yAxis
                 },
+                height: o.height,
+                width: o.width,
                 initialize: true
             });
 
