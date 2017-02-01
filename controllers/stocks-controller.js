@@ -30,10 +30,12 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', 'stoc
     $scope.selectMin = function (startDate) {
         $scope.startDate = startDate;
         $scope.chartData = stockService.betweenDates($scope.rawData, $scope.startDate, $scope.endDate);
+        $scope.stockData = stockService.betweenDates($scope.rawData, $scope.startDate, $scope.endDate);
     };
 
     $scope.selectMax = function (endDate) {
         $scope.endDate = endDate;
         $scope.chartData = stockService.betweenDates($scope.rawData, $scope.startDate, $scope.endDate);
+        $scope.stockData = stockService.betweenDates($scope.rawData, $scope.startDate, $scope.endDate);
     }
 }]);

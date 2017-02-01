@@ -1,7 +1,7 @@
 /**
  * Created by voliseq on 31.01.2017.
  */
-stocksApp.service('stockService', [ function() {
+stocksApp.service('stockService', [function () {
 
     var v = 800,
         h = 500,
@@ -25,24 +25,26 @@ stocksApp.service('stockService', [ function() {
         height: h - margin.top - margin.bottom,
         dateParser: d3.timeParse("%Y-%m-%d"),
         colorScale: d3.scaleOrdinal(d3.schemeCategory10),
+        format: d3.timeFormat("%Y.%m.%d")
 
     };
 
 
-    this.changeCompany = function(arr, symbol){
+    this.changeCompany = function (arr, symbol) {
         return arr.filter(function (elem) {
-            return elem.Symbol = symbol;
+            return elem.Symbol == symbol;
         })
     };
 
-    this.betweenDates = function(arr, startDate, endDate){
+    this.betweenDates = function (arr, startDate, endDate) {
         return arr.filter(function (elem) {
             var date = elem.Date;
-            return date.getTime() >= startDate.getTime() && date.getTime() <=  endDate.getTime();
+            return date.getTime() >= startDate.getTime() && date.getTime() <= endDate.getTime();
         })
     };
 
-    this.drawAxes = function(params, header){
+    this.drawAxes = function (params, header) {
+        if (params.initialize) {
             this.append("g")
                 .classed("axis x", true)
                 .attr("transform", "translate(0," + params.height + ")")
@@ -80,10 +82,21 @@ stocksApp.service('stockService', [ function() {
                 .classed("chart-header", true)
                 .attr("transform", "translate(0,-24)")
                 .text("");
+        }else {
+            //Update info
+            this.selectAll("g.x.axis")
+                .transition()
+                .call(params.axis.x);
+
+            this.selectAll("g.x.axis .tick text")
+                .style("text-anchor", "end")
+                .attr("dx", -8)
+                .attr("dy", 8)
+                .attr("transform", "translate(0,0) rotate(-45)");
+
+        }
+
     };
-
-
-
 
 
 }]);

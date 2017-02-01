@@ -168,8 +168,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     x: xAxis,
                     y: yAxis
                 },
-                line: line,
-                initialize: true
+                line: line
             });
 
         }

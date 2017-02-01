@@ -16,7 +16,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
 
             function changeCompany(d) {
                 scope.$apply(function () {
-                    scope.stockData = stockService.changeCompany(data, d);
+                    scope.stockData = stockService.changeCompany(scope.chartData, d);
                 })
             }
 
@@ -44,6 +44,12 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
 
 
             function plot(params) {
+                //update scale
+                x.domain(d3.extent(params.data, function (d) {
+                        return d.Date;
+                    }));
+
+
                 var self = this;
                 stockService.drawAxes.call(this, params, 1);
 
@@ -102,7 +108,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                             str += ", High: " + info.High;
                             str += ", Low: " + info.Low;
                             str += ", Volume: " + info.Volume;
-                            str += ", Date: " + info.Date;
+                            str += ", Date: " + o.format(info.Date);
                             d3.select(".chart-header").text(str);
                         })
                         .on("mouseout", function (d, i) {
@@ -152,29 +158,9 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                 width: o.width,
                 initialize: true
             });
-            plot.call(chart, {
-                data: data,
-                axis: {
-                    x: xAxis,
-                    y: yAxis
-                },
-                height: o.height,
-                width: o.width,
-                initialize: true
-            });
+
             scope.$watch("chartData", function (newValue, oldValue) {
-                var x = d3.scaleTime()
-                        .domain(d3.extent(data, function (d) {
-                            return d.Date;
-                        }))
-                        .range([0, o.width]),
-                    y = d3.scaleLinear()
-                        .domain([0, d3.max(data, function (d) {
-                            return d.Close;
-                        })])
-                        .range([o.height, 0]);
-                var xAxis = d3.axisBottom(x),
-                    yAxis = d3.axisLeft(y);
+
                 plot.call(chart, {
                     data: newValue,
                     axis: {
@@ -182,8 +168,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         y: yAxis
                     },
                     height: o.height,
-                    width: o.width,
-                    initialize: true
+                    width: o.width
                 });
             });
         }
