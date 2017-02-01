@@ -24,7 +24,7 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', 'stoc
     $scope.sixMonthsBack = new Date($scope.endDate.getTime() - (86400000 * 30 * 6) );
     $scope.chartData = stockService.betweenDates($scope.rawData, $scope.sixMonthsBack, $scope.endDate);
     $scope.selectCompany = function (company) {
-        $scope.stockData = $scope.chartData.filter(function (elem) {
+        $scope.stockData = $scope.rawData.filter(function (elem) {
             return elem.Symbol == company;
         });
     };
