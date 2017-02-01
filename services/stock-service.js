@@ -53,7 +53,6 @@ stocksApp.service('stockService', function () {
             })
             .classed("company", true)
             .on("click", function (d) {
-                console.log(d);
                 changeCompany(d);
             });
 

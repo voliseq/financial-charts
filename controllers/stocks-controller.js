@@ -21,14 +21,14 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', 'stoc
     });
     $scope.startDate = new Date(Math.min.apply(null, dates));
     $scope.endDate = new Date(Math.max.apply(null, dates));
-    $scope.chartData = $scope.rawData;
+    $scope.sixMonthsBack = new Date($scope.endDate.getTime() - (86400000 * 30 * 6) );
+    $scope.chartData = stockService.betweenDates($scope.rawData, $scope.sixMonthsBack, $scope.endDate);
     $scope.selectCompany = function (company) {
-        $scope.stockData = $scope.rawData.filter(function (elem) {
+        $scope.stockData = $scope.chartData.filter(function (elem) {
             return elem.Symbol == company;
         });
     };
     $scope.selectCompany("CSCO");
-
     $scope.options = {
         minDate: $scope.startDate,
         maxDate: $scope.endDate

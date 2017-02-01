@@ -96,6 +96,15 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService", f
                         })
                         .style("stroke", function (d, i) {
                             return colorScale(index);
+                        })
+                        .on("mouseover", function (d) {
+                            d3.select("." + symbol + " .trendline")
+                                .style("stroke-width", "9px");
+
+                        })
+                        .on("mouseout", function (d) {
+                            d3.select("." + symbol + " .trendline")
+                                .style("stroke-width", "7px");
                         });
 
                     self.select("text.label")
@@ -104,7 +113,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService", f
                                 var path = d3.selectAll("g." + symbol + " .trendline");
                                 var label = d3.selectAll("text.label." + symbol);
                                 label.style("opacity", 0.3);
-                                path.style("opacity", 0);
+                                path.style("display", "none");
                             }
                         });
 
@@ -118,9 +127,9 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService", f
                         .text(symbol)
                         .on("click", function (d) {
                             var path = self.selectAll("g." + symbol + " .trendline");
-                            var label = self.selectAll("text.label." + symbol);
+                            var label = d3.select(this);
                             parseInt(label.style("opacity")) ? label.style("opacity", 0.3) : label.style("opacity", 1);
-                            parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
+                            path.style("display") == "inline" ? path.style("display", "none") : path.style("display", "inline");
                         });
 
 

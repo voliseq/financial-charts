@@ -40,9 +40,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                     })])
                     .range([o.height, 0]);
 
-            var xAxis = d3.axisBottom(x)
-                    .ticks(d3.timeMonths, 1)
-                    .ticks(6),
+            var xAxis = d3.axisBottom(x);
                 yAxis = d3.axisLeft(y);
 
             function plot(params) {
@@ -120,7 +118,7 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                                 var path = d3.selectAll("g." + symbol + " .point");
                                 var label = d3.selectAll("text.label." + symbol);
                                 label.style("opacity", 0.3);
-                                path.style("opacity", 0);
+                                path.style("display", "none");
                             }
                         });
                     self.select(".legend .label." + symbol)
@@ -133,9 +131,10 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         .text(symbol)
                         .on("click", function (d) {
                             var path = self.selectAll("g." + symbol + " .point");
-                            var label = self.selectAll("text.label." + symbol);
+                            var label = d3.select(this);
                             parseInt(label.style("opacity")) ? label.style("opacity", 0.3) : label.style("opacity", 1);
-                            parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
+                            path.style("display") == "inline" ? path.style("display", "none") : path.style("display", "inline");
+
                         });
 
                     //exit

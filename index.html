@@ -12,7 +12,7 @@
         <div class="row" id="datePickerRow">
             <div class="col col-xs-6 col-sm-6">
                 <div style="display:inline-block; min-height:290px;">
-                    <div uib-datepicker ng-model="startDate" ng-change="selectMin(startDate)" class="well well-sm" datepicker-options="options"></div>
+                    <div uib-datepicker ng-model="sixMonthsBack" ng-change="selectMin(startDate)" class="well well-sm" datepicker-options="options"></div>
                 </div>
             </div>
             <div class="col col-xs-6 col-sm-6">
@@ -30,9 +30,7 @@
         </div>
         <div class="row" id="stockInfo">
             <div class="col col-xs-12">
-                <stock-info stock-data = "stockData">
-
-                </stock-info>
+                <stock-info stock-data = "stockData"></stock-info>
             </div>
         </div>
         <div class="row">
@@ -49,6 +47,6 @@
 <script src="directives/stock-chart.js"></script>
 <script src="directives/stock-price-chart.js"></script>
 <script src="directives/stock-high-low-chart.js"></script>
-<script src="directives/stock-info.js"></script>
+<script src="directives/stock-info.-table.js"></script>
 </body>
 </html>

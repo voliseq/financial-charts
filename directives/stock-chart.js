@@ -9,7 +9,7 @@ stocksApp.directive("stockChart", ['$window', '$timeout', function ($window, $ti
             chartData: "="
         },
         link: function ($scope, elem, attrs) {
-            var data = $scope.chartData.data;
+            var data = $scope.chartData;
             var symbols = [];
             data.map(function (elem) {
                 if (symbols.indexOf(elem.Symbol) == -1) {
@@ -62,12 +62,12 @@ stocksApp.directive("stockChart", ['$window', '$timeout', function ($window, $ti
             var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
             var x = d3.scaleTime()
                 .domain(d3.extent(data, function (d) {
-                    return dateParser(d.Date);
+                    return d.Date;
                 }))
                 .range([0, width]);
             var x2 = d3.scaleTime()
                 .domain(d3.extent(data, function (d) {
-                    return dateParser(d.Date);
+                    return d.Date;
                 }))
                 .range([0, width]);
             var y = d3.scaleLinear()
@@ -85,14 +85,14 @@ stocksApp.directive("stockChart", ['$window', '$timeout', function ($window, $ti
             var yAxis = d3.axisLeft(y);
             var line = d3.line()
                 .x(function (d) {
-                    return x(dateParser(d.Date));
+                    return x(d.Date);
                 })
                 .y(function (d) {
                     return y(d.Close)
                 });
             var line2 = d3.line()
                 .x(function (d) {
-                    return x2(dateParser(d.Date));
+                    return x2(d.Date);
                 })
                 .y(function (d) {
                     return y2(d.Close)
