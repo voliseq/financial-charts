@@ -3,7 +3,6 @@
  */
 var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', 'stockService', function ($scope, $timeout, stockService) {
     var dateParser = stockService.o.dateParser;
-
     $scope.rawData = rawData.query.results.quote;
     angular.forEach($scope.rawData, function (elem) {
         elem.Date = dateParser(elem.Date);
@@ -28,7 +27,8 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', 'stoc
             return elem.Symbol == company;
         });
     };
-    $scope.selectCompany("CSCO");
+    $scope.selected = "CSCO";
+    $scope.selectCompany($scope.selected);
     $scope.options = {
         minDate: $scope.startDate,
         maxDate: $scope.endDate
