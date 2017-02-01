@@ -13,27 +13,13 @@ body,html{
     background-color: #F5F2EB;
     border: 1px solid #CCC;
 }
-.bar{
-    fill: purple;
-    shape-rendering: crispEdges;
-}
-.bar-label{
-    fill: black;
-    text-anchor: middle;
-    font-size: 18px;
-}
 .axis path,
 .axis line{
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
 }
-.gridline path,
-.gridline line{
-    fill: none;
-    stroke: #ccc;
-    shape-rendering: crispEdges;
-}
+
 .trendline{
     fill: none;
     stroke: #ccc;
@@ -41,16 +27,6 @@ body,html{
     cursor: pointer;
 }
 
-.area {
-    fill: steelblue;
-    clip-path: url(#clip);
-}
-
-.zoom {
-    cursor: move;
-    fill: none;
-    pointer-events: all;
-}
 text{
 
     fill: black;
