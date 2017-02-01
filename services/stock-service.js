@@ -43,7 +43,7 @@ stocksApp.service('stockService', function () {
         })
     };
 
-    this.initCompanies = function(changeCompany, symbols){
+    this.initCompanies = function (changeCompany, symbols) {
         this.selectAll(".company")
             .data(symbols)
             .enter()
@@ -53,6 +53,7 @@ stocksApp.service('stockService', function () {
             })
             .classed("company", true)
             .on("click", function (d) {
+                console.log(d);
                 changeCompany(d);
             });
 
@@ -96,17 +97,19 @@ stocksApp.service('stockService', function () {
                 .attr("transform", "translate(-50," + params.height / 2 + ") rotate(-90)")
                 .text("Price ($)");
             //chart header
-            this.append("g")
-                .append("text")
-                .classed("chart-header", true)
-                .attr("transform", "translate(0,-24)")
-                .text("");
+            if (header) {
+                this.append("g")
+                    .append("text")
+                    .classed("chart-header", true)
+                    .attr("transform", "translate(0,-24)")
+                    .text("");
+            }
             //enter
             this.append("g")
                 .classed("legend", true);
 
 
-        }else {
+        } else {
             //Update info
             this.selectAll("g.x.axis")
                 .transition()

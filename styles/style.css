@@ -34,10 +34,11 @@ body,html{
     stroke: #ccc;
     shape-rendering: crispEdges;
 }
-.trendline, .vline{
+.trendline{
     fill: none;
     stroke: #ccc;
     stroke-width: 4px;
+    cursor: pointer;
 }
 
 .area {

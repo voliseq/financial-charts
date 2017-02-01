@@ -1,50 +1,45 @@
 /**
  * Created by voliseq on 30.01.2017.
  */
-stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService",  function ($window, $timeout, stockService) {
+stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService", function ($window, $timeout, stockService) {
     return {
         restrict: "E",
         templateUrl: 'templates/stock-price-chart.html',
         replace: true,
         scope: {
-            chartData: "="
+            chartData: "=",
+            stockData: "="
         },
         link: function (scope, elem, attrs) {
             var data = scope.chartData;
-            var v = 800,
-                h = 500,
-                margin = {
-                    top: 70,
-                    bottom: 150,
-                    left: 80,
-                    right: 20
-                };
+            var o = stockService.o;
 
-            var width = v - margin.left - margin.right,
-                height = h - margin.top - margin.bottom;
+            var changeCompany = function (d) {
+                scope.$apply(function () {
+                    scope.stockData = stockService.changeCompany(scope.chartData, d);
+                })
+            };
 
             var svg = d3.select(elem[0]).append("svg")
                 .attr("id", "priceTime")
-                .attr("width", v)
-                .attr("height", h);
+                .attr("width", o.v)
+                .attr("height", o.h);
 
             var chart = svg.append("g")
                 .classed("display", true)
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            var dateParser = d3.timeParse("%Y-%m-%d");
+                .attr("transform", "translate(" + o.margin.left + "," + o.margin.top + ")");
 
             var colorScale = d3.scaleOrdinal(d3.schemeCategory10),
                 x = d3.scaleTime()
                     .domain(d3.extent(data, function (d) {
                         return d.Date;
                     }))
-                    .range([0, width]),
+                    .range([0, o.width]),
                 y = d3.scaleLinear()
                     .domain([0, d3.max(data, function (d) {
                         return d.Close;
                     })])
-                    .range([height, 0]);
+                    .range([o.height, 0]);
             var xAxis = d3.axisBottom(x),
                 yAxis = d3.axisLeft(y);
 
@@ -56,40 +51,38 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService",  
                     return y(d.Close);
                 });
 
-
-
-
-
             function plot(params) {
-                stockService.drawAxes.call(this, params);
+                x.domain(d3.extent(params.data, function (d) {
+                    return d.Date;
+                }));
+
                 var self = this;
+
+                stockService.drawAxes.call(this, params);
                 var symbols = [];
                 params.data.map(function (elem) {
                     if (symbols.indexOf(elem.Symbol) == -1) {
                         symbols.push(elem.Symbol);
                     }
                 });
-
-                this.selectAll(".company")
-                    .data(symbols)
-                    .enter()
-                    .append("g")
-                    .attr("class", function (d) {
-                        return d;
-                    })
-                    .classed("company", true);
-
-                this.selectAll("company")
-                    .data(symbols)
-                    .exit()
-                    .remove();
+                stockService.initCompanies.call(this, changeCompany, symbols);
 
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);
                     var arr = params.data.filter(function (elem) {
                         return elem.Symbol == symbol;
                     });
-                    //enter trendline
+                    //enter
+                    self.select("g.legend")
+                        .selectAll(".label")
+                        .data(symbols)
+                        .enter()
+                        .append("text")
+                        .attr("class", function (d) {
+                            return d;
+                        })
+                        .classed("label", true);
+
                     g.selectAll(".trendline")
                         .data([arr])
                         .enter()
@@ -104,25 +97,44 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService",  
                         .style("stroke", function (d, i) {
                             return colorScale(index);
                         });
-                    //exit trendline
+
+                    self.select("text.label")
+                        .style("opacity", function (d, i) {
+                            if (index > 2) {
+                                var path = d3.selectAll("g." + symbol + " .trendline");
+                                var label = d3.selectAll("text.label." + symbol);
+                                label.style("opacity", 0.3);
+                                path.style("opacity", 0);
+                            }
+                        });
+
+                    self.select(".legend .label." + symbol)
+                        .attr("transform", "translate(" + (0 + index * 80) + "," + (o.height + 110) + ")")
+                        .attr("dy", ".35em")
+                        .attr("text-anchor", "start")
+                        .style("fill", function (d, i) {
+                            return o.colorScale(index);
+                        })
+                        .text(symbol)
+                        .on("click", function (d) {
+                            var path = self.selectAll("g." + symbol + " .trendline");
+                            var label = self.selectAll("text.label." + symbol);
+                            parseInt(label.style("opacity")) ? label.style("opacity", 0.3) : label.style("opacity", 1);
+                            parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
+                        });
+
+
+                    //exit
+                    self.selectAll(".label")
+                        .data(symbols)
+                        .exit()
+                        .remove();
+
                     g.selectAll(".trendline")
                         .data([arr])
                         .exit()
                         .remove();
 
-                    g.append("text")
-                        .attr("transform", "translate(" + (0 + index * 80) + "," + (height + 110) + ")")
-                        .attr("dy", ".35em")
-                        .attr("text-anchor", "start")
-                        .classed("label " + symbol, true)
-                        .style("fill", function (d, i) {
-                            return colorScale(index);
-                        })
-                        .text(symbol)
-                        .on("click", function (ele) {
-                            var path = d3.select(".company." + symbol + " path");
-                            parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
-                        })
                 });
             }
 
@@ -132,10 +144,23 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService",  
                     x: xAxis,
                     y: yAxis
                 },
-                height: height,
-                width: width,
+                height: o.height,
+                width: o.width,
                 line: line,
                 initialize: true
+            });
+
+            scope.$watch("chartData", function (newValue, oldValue) {
+                plot.call(chart, {
+                    data: newValue,
+                    axis: {
+                        x: xAxis,
+                        y: yAxis
+                    },
+                    height: o.height,
+                    width: o.width,
+                    line: line
+                });
             });
 
         }
