@@ -1,7 +1,4 @@
-/**
- * Created by voliseq on 31.01.2017.
- */
-stocksApp.service('stockService', function () {
+stocksApp.service('drawingService', function () {
 
     var v = 800,
         h = 500,
@@ -27,39 +24,6 @@ stocksApp.service('stockService', function () {
         colorScale: d3.scaleOrdinal(d3.schemeCategory10),
         format: d3.timeFormat("%Y.%m.%d")
 
-    };
-
-
-    this.changeCompany = function (arr, symbol) {
-        return arr.filter(function (elem) {
-            return elem.Symbol == symbol;
-        })
-    };
-
-    this.betweenDates = function (arr, startDate, endDate) {
-        return arr.filter(function (elem) {
-            var date = elem.Date;
-            return date.getTime() >= startDate.getTime() && date.getTime() <= endDate.getTime();
-        })
-    };
-
-    this.initCompanies = function (changeCompany, symbols) {
-        this.selectAll(".company")
-            .data(symbols)
-            .enter()
-            .append("g")
-            .attr("class", function (d) {
-                return d;
-            })
-            .classed("company", true)
-            .on("click", function (d) {
-                changeCompany(d);
-            });
-
-        this.selectAll("company")
-            .data(symbols)
-            .exit()
-            .remove();
     };
 
     this.drawAxes = function (params, header) {
@@ -122,7 +86,25 @@ stocksApp.service('stockService', function () {
 
         }
 
-    }
+    };
 
+    this.initCompanies = function (changeCompany, symbols) {
+        this.selectAll(".company")
+            .data(symbols)
+            .enter()
+            .append("g")
+            .attr("class", function (d) {
+                return d;
+            })
+            .classed("company", true)
+            .on("click", function (d) {
+                changeCompany(d);
+            });
+
+        this.selectAll("company")
+            .data(symbols)
+            .exit()
+            .remove();
+    };
 
 });

@@ -1,7 +1,7 @@
 /**
  * Created by voliseq on 30.01.2017.
  */
-stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService', function ($window, $timeout, stockService) {
+stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'drawingService', 'dataService',  function ($window, $timeout, drawingService, dataService) {
     return {
         restrict: "E",
         templateUrl: 'templates/stock-price-chart.html',
@@ -12,11 +12,11 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
         },
         link: function (scope, elem, attrs) {
             var data = scope.chartData;
-            var o = stockService.o;
+            var o = drawingService.o;
 
            var changeCompany = function(d) {
                 scope.$apply(function () {
-                    scope.stockData = stockService.changeCompany(scope.chartData, d);
+                    scope.stockData = dataService.changeCompany(scope.chartData, d);
                 })
             };
 
@@ -51,14 +51,14 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
 
                 var self = this;
 
-                stockService.drawAxes.call(this, params, 1);
+                drawingService.drawAxes.call(this, params, 1);
                 var symbols = [];
                 params.data.map(function (elem) {
                     if (symbols.indexOf(elem.Symbol) == -1) {
                         symbols.push(elem.Symbol);
                     }
                 });
-                stockService.initCompanies.call(this, changeCompany, symbols);
+                drawingService.initCompanies.call(this, changeCompany, symbols);
                 var arr = [];
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);

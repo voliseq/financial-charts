@@ -1,7 +1,7 @@
 /**
  * Created by voliseq on 30.01.2017.
  */
-stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService", function ($window, $timeout, stockService) {
+stocksApp.directive("stockPriceChart", ['$window', '$timeout', "drawingService", 'dataService', function ($window, $timeout, drawingService, dataService) {
     return {
         restrict: "E",
         templateUrl: 'templates/stock-price-chart.html',
@@ -12,11 +12,11 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService", f
         },
         link: function (scope, elem, attrs) {
             var data = scope.chartData;
-            var o = stockService.o;
+            var o = drawingService.o;
 
             var changeCompany = function (d) {
                 scope.$apply(function () {
-                    scope.stockData = stockService.changeCompany(scope.chartData, d);
+                    scope.stockData = dataService.changeCompany(scope.chartData, d);
                 })
             };
 
@@ -58,14 +58,14 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService", f
 
                 var self = this;
 
-                stockService.drawAxes.call(this, params);
+                drawingService.drawAxes.call(this, params);
                 var symbols = [];
                 params.data.map(function (elem) {
                     if (symbols.indexOf(elem.Symbol) == -1) {
                         symbols.push(elem.Symbol);
                     }
                 });
-                stockService.initCompanies.call(this, changeCompany, symbols);
+                drawingService.initCompanies.call(this, changeCompany, symbols);
 
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);

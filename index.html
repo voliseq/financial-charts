@@ -8,35 +8,36 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body ng-app="stocks" ng-controller="stocksCtrl">
-    <div class="container" id="container">
-        <div class="row" id="datePickerRow">
-            <div class="col col-xs-6 col-sm-6">
-                <div style="display:inline-block; min-height:290px;">
-                    <div uib-datepicker ng-model="sixMonthsBack" ng-change="selectMin(sixMonthsBack)" class="well well-sm" datepicker-options="options"></div>
-                </div>
-            </div>
-            <div class="col col-xs-6 col-sm-6">
-                <div style="display:inline-block; min-height:290px;">
-                    <div uib-datepicker ng-model="endDate" ng-change="selectMax(endDate)" class="well well-sm" datepicker-options="options"></div>
-                </div>
+<div class="container" id="container">
+    <div class="row" id="datePickerRow">
+        <div class="col col-xs-6 col-sm-6">
+            <div style="display:inline-block; min-height:290px;">
+                <div uib-datepicker ng-model="sixMonthsBack" ng-change="selectMin(sixMonthsBack)" class="well well-sm"
+                     datepicker-options="options"></div>
             </div>
         </div>
-        <div class="row" id="chartsRow">
-            <div class="col col-xs-12">
-                <stock-price-chart stock-data="stockData" chart-data="chartData"></stock-price-chart>
-                <stock-high-low-chart stock-data="stockData" chart-data="chartData"></stock-high-low-chart>
+        <div class="col col-xs-6 col-sm-6">
+            <div style="display:inline-block; min-height:290px;">
+                <div uib-datepicker ng-model="endDate" ng-change="selectMax(endDate)" class="well well-sm"
+                     datepicker-options="options"></div>
             </div>
-            <!--<stock-chart chart-data="chartData"></stock-chart>-->
-        </div>
-        <div class="row" id="stockInfo">
-            <div class="col col-xs-12">
-                <stock-info stock-data = "stockData"></stock-info>
-            </div>
-        </div>
-        <div class="row">
-
         </div>
     </div>
+    <div class="row" id="chartsRow">
+        <div class="col col-xs-12">
+            <stock-price-chart stock-data="stockData" chart-data="chartData"></stock-price-chart>
+            <stock-high-low-chart stock-data="stockData" chart-data="chartData"></stock-high-low-chart>
+        </div>
+    </div>
+    <div class="row" id="stockInfo">
+        <div class="col col-xs-12">
+            <stock-info stock-data="stockData"></stock-info>
+        </div>
+    </div>
+    <div class="row">
+
+    </div>
+</div>
 <script src="vendor/d3.js"></script>
 <script src="data.js"></script>
 <script src="vendor/angular.js"></script>
@@ -44,8 +45,10 @@
 <script src="vendor/ui-bootstrap-tpls-2.5.0.min.js"></script>
 <script src="controllers/stocks-controller.js"></script>
 <script src="services/stock-service.js"></script>
+<script src="services/data-service.js"></script>
+<script src="services/drawing-service.js"></script>
 <script src="directives/stock-price-chart.js"></script>
 <script src="directives/stock-high-low-chart.js"></script>
-<script src="directives/stock-info.-table.js"></script>
+<script src="directives/stock-info-table.js"></script>
 </body>
 </html>
