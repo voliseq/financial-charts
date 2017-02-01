@@ -13,6 +13,12 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', 'stoc
         return elem.Date;
     });
 
+    $scope.symbols = [];
+    $scope.rawData.map(function (elem) {
+        if ($scope.symbols.indexOf(elem.Symbol) == -1) {
+            $scope.symbols.push(elem.Symbol);
+        }
+    });
     $scope.startDate = new Date(Math.min.apply(null, dates));
     $scope.endDate = new Date(Math.max.apply(null, dates));
     $scope.chartData = $scope.rawData;

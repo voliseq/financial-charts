@@ -39,9 +39,10 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         return d.Close;
                     })])
                     .range([o.height, 0]);
-            var xAxis = d3.axisBottom(x),
+            var xAxis = d3.axisBottom(x)
+                .ticks(d3.timeMonths, 1)
+                .ticks(6),
                 yAxis = d3.axisLeft(y);
-
 
             function plot(params) {
                 //update scale
@@ -49,16 +50,16 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         return d.Date;
                     }));
 
-
                 var self = this;
-                stockService.drawAxes.call(this, params, 1);
 
+                stockService.drawAxes.call(this, params, 1);
                 var symbols = [];
                 params.data.map(function (elem) {
                     if (symbols.indexOf(elem.Symbol) == -1) {
                         symbols.push(elem.Symbol);
                     }
                 });
+
                 this.selectAll(".company")
                     .data(symbols)
                     .enter()
@@ -70,6 +71,8 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                     .on("click", function (d) {
                         changeCompany(d);
                     });
+
+                //exit
 
                 this.selectAll("company")
                     .data(symbols)
@@ -83,6 +86,17 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         return elem.Symbol == symbol;
                     });
                     //enter
+
+                    self.select("g.legend")
+                        .selectAll(".label")
+                        .data(symbols)
+                        .enter()
+                        .append("text")
+                        .attr("class", function(d){
+                            return d;
+                        })
+                        .classed("label", true);
+
                     g.selectAll(".point")
                         .data(arr[index])
                         .enter()
@@ -118,7 +132,36 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                             d3.select(".chart-header").text("");
                         });
 
+                    self.select("text.label")
+                        .style("opacity", function (d, i) {
+                            if(index > 2){
+                                var path = d3.selectAll("g." + symbol + " .point");
+                                var label = d3.selectAll("text.label."+symbol );
+                                label.style("opacity", 0.3);
+                                path.style("opacity", 0);
+                            }
+                        });
+                    self.select(".label."+symbol)
+                        .attr("transform", "translate(" + (0 + index * 80) + "," + (o.height + 110) + ")")
+                        .attr("dy", ".35em")
+                        .attr("text-anchor", "start")
+                        .style("fill", function (d, i) {
+                            return o.colorScale(index);
+                        })
+                        .text(symbol)
+                        .on("click", function (d) {
+                            var path = d3.selectAll("g." + symbol + " .point");
+                            var label = d3.selectAll("text.label."+symbol );
+                            parseInt(label.style("opacity")) ? label.style("opacity", 0.3) : label.style("opacity", 1);
+                            parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
+                        });
+
                     //exit
+                    self.selectAll(".label")
+                        .data(symbols)
+                        .exit()
+                        .remove();
+
                     g.selectAll(".point")
                         .style("fill", function (d, i) {
                             return o.colorScale(index);
@@ -128,22 +171,6 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         .data(arr[index])
                         .exit()
                         .remove();
-
-
-                    g.append("text")
-                        .attr("transform", "translate(" + (0 + index * 80) + "," + (o.height + 110) + ")")
-                        .attr("dy", ".35em")
-                        .attr("text-anchor", "start")
-                        .classed("label " + symbol, true)
-                        .style("fill", function (d, i) {
-                            return o.colorScale(index);
-                        })
-                        .text(symbol)
-                        .on("click", function () {
-                            console.log("elo");
-                            var path = d3.selectAll("g." + symbol + " .point");
-                            parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
-                        })
                 });
 
             }

@@ -10,7 +10,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
             chartData: "="
         },
         link: function (scope, elem, attrs) {
-            var data = scope.chartData.data;
+            var data = scope.chartData;
             var v = 800,
                 h = 500,
                 margin = {
@@ -111,11 +111,6 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     .classed("company", true);
 
                 this.selectAll("company")
-                    .attr("class", function (d) {
-                        return d;
-                    });
-
-                this.selectAll("company")
                     .data(symbols)
                     .exit()
                     .remove();
@@ -147,18 +142,18 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                         .remove();
 
                     g.append("text")
-                        .attr("transform", "translate(" + (0 + index*80) + "," + (height + 110) + ")")
+                        .attr("transform", "translate(" + (0 + index * 80) + "," + (height + 110) + ")")
                         .attr("dy", ".35em")
                         .attr("text-anchor", "start")
-                        .classed("label "+symbol, true)
+                        .classed("label " + symbol, true)
                         .style("fill", function (d, i) {
                             return colorScale(index);
                         })
                         .text(symbol)
-                        .on("click", function(ele){
-                        var path = d3.select(".company."+symbol +" path");
+                        .on("click", function (ele) {
+                            var path = d3.select(".company." + symbol + " path");
                             parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
-                    })
+                        })
                 });
             }
 

@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body ng-app="stocks" ng-controller="stocksCtrl">
-    <div class="container-fluid" id="container">
+    <div class="container" id="container">
         <div class="row" id="datePickerRow">
-            <div class="col col-xs-12 col-sm-6">
+            <div class="col col-xs-6 col-sm-6">
                 <div style="display:inline-block; min-height:290px;">
                     <div uib-datepicker ng-model="startDate" ng-change="selectMin(startDate)" class="well well-sm" datepicker-options="options"></div>
                 </div>
             </div>
-            <div class="col col-xs-12 col-sm-6">
+            <div class="col col-xs-6 col-sm-6">
                 <div style="display:inline-block; min-height:290px;">
                     <div uib-datepicker ng-model="endDate" ng-change="selectMax(endDate)" class="well well-sm" datepicker-options="options"></div>
                 </div>
@@ -23,7 +23,7 @@
         </div>
         <div class="row" id="chartsRow">
             <div class="col col-xs-12">
-                <!--<stock-price-chart chart-data="chartData"></stock-price-chart>-->
+                <stock-price-chart chart-data="chartData"></stock-price-chart>
                 <stock-high-low-chart stock-data="stockData" chart-data="chartData"></stock-high-low-chart>
             </div>
             <!--<stock-chart chart-data="chartData"></stock-chart>-->

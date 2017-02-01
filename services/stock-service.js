@@ -1,7 +1,7 @@
 /**
  * Created by voliseq on 31.01.2017.
  */
-stocksApp.service('stockService', [function () {
+stocksApp.service('stockService', function () {
 
     var v = 800,
         h = 500,
@@ -82,6 +82,11 @@ stocksApp.service('stockService', [function () {
                 .classed("chart-header", true)
                 .attr("transform", "translate(0,-24)")
                 .text("");
+            //enter
+            this.append("g")
+                .classed("legend", true);
+
+
         }else {
             //Update info
             this.selectAll("g.x.axis")
@@ -96,7 +101,7 @@ stocksApp.service('stockService', [function () {
 
         }
 
-    };
+    }
 
 
-}]);
+});
