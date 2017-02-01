@@ -1,7 +1,7 @@
 /**
  * Created by voliseq on 30.01.2017.
  */
-stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window, $timeout) {
+stocksApp.directive("stockPriceChart", ['$window', '$timeout', "stockService",  function ($window, $timeout, stockService) {
     return {
         restrict: "E",
         templateUrl: 'templates/stock-price-chart.html',
@@ -57,42 +57,11 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                 });
 
 
-            function drawAxis(params) {
-                this.append("g")
-                    .classed("axis x", true)
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(params.axis.x)
-                    .selectAll("text")
-                    .classed("x-axis-label", true)
-                    .style("text-anchor", "end")
-                    .attr("dx", -8)
-                    .attr("dy", 8)
-                    .attr("transform", "translate(0,0) rotate(-45)");
-                //This is the x label
-                this.select(".x.axis")
-                    .append("text")
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .style("text-anchor", "middle")
-                    .attr("transform", "translate(" + width / 2 + ",80)")
-                    .text("Time");
 
-                this.append("g")
-                    .classed("axis y", true)
-                    .attr("transform", "translate(0,0)")
-                    .call(params.axis.y);
-                //This is the y label
-                this.select(".y.axis")
-                    .append("text")
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .style("text-anchor", "middle")
-                    .attr("transform", "translate(-50," + height / 2 + ") rotate(-90)")
-                    .text("Price ($)");
-            }
+
 
             function plot(params) {
-                drawAxis.call(this, params);
+                stockService.drawAxes.call(this, params);
                 var self = this;
                 var symbols = [];
                 params.data.map(function (elem) {
@@ -163,7 +132,10 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', function ($window
                     x: xAxis,
                     y: yAxis
                 },
-                line: line
+                height: height,
+                width: width,
+                line: line,
+                initialize: true
             });
 
         }

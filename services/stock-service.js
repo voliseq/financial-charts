@@ -43,6 +43,25 @@ stocksApp.service('stockService', function () {
         })
     };
 
+    this.initCompanies = function(changeCompany, symbols){
+        this.selectAll(".company")
+            .data(symbols)
+            .enter()
+            .append("g")
+            .attr("class", function (d) {
+                return d;
+            })
+            .classed("company", true)
+            .on("click", function (d) {
+                changeCompany(d);
+            });
+
+        this.selectAll("company")
+            .data(symbols)
+            .exit()
+            .remove();
+    };
+
     this.drawAxes = function (params, header) {
         if (params.initialize) {
             this.append("g")

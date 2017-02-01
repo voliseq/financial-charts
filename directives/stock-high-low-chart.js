@@ -14,14 +14,14 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
             var data = scope.chartData;
             var o = stockService.o;
 
-            function changeCompany(d) {
+           var changeCompany = function(d) {
                 scope.$apply(function () {
                     scope.stockData = stockService.changeCompany(scope.chartData, d);
                 })
-            }
+            };
 
             var svg = d3.select(elem[0]).append("svg")
-                .attr("id", "priceTime")
+                .attr("id", "highLow")
                 .attr("width", o.v)
                 .attr("height", o.h);
 
@@ -39,16 +39,17 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         return d.Close;
                     })])
                     .range([o.height, 0]);
+
             var xAxis = d3.axisBottom(x)
-                .ticks(d3.timeMonths, 1)
-                .ticks(6),
+                    .ticks(d3.timeMonths, 1)
+                    .ticks(6),
                 yAxis = d3.axisLeft(y);
 
             function plot(params) {
                 //update scale
                 x.domain(d3.extent(params.data, function (d) {
-                        return d.Date;
-                    }));
+                    return d.Date;
+                }));
 
                 var self = this;
 
@@ -59,40 +60,21 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         symbols.push(elem.Symbol);
                     }
                 });
-
-                this.selectAll(".company")
-                    .data(symbols)
-                    .enter()
-                    .append("g")
-                    .attr("class", function (d) {
-                        return d;
-                    })
-                    .classed("company", true)
-                    .on("click", function (d) {
-                        changeCompany(d);
-                    });
-
-                //exit
-
-                this.selectAll("company")
-                    .data(symbols)
-                    .exit()
-                    .remove();
-
+                stockService.initCompanies.call(this, changeCompany, symbols);
                 var arr = [];
                 symbols.forEach(function (symbol, index) {
                     var g = self.selectAll("g." + symbol);
                     arr[index] = params.data.filter(function (elem) {
                         return elem.Symbol == symbol;
                     });
-                    //enter
 
+                    //enter
                     self.select("g.legend")
                         .selectAll(".label")
                         .data(symbols)
                         .enter()
                         .append("text")
-                        .attr("class", function(d){
+                        .attr("class", function (d) {
                             return d;
                         })
                         .classed("label", true);
@@ -134,14 +116,14 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
 
                     self.select("text.label")
                         .style("opacity", function (d, i) {
-                            if(index > 2){
+                            if (index > 2) {
                                 var path = d3.selectAll("g." + symbol + " .point");
-                                var label = d3.selectAll("text.label."+symbol );
+                                var label = d3.selectAll("text.label." + symbol);
                                 label.style("opacity", 0.3);
                                 path.style("opacity", 0);
                             }
                         });
-                    self.select(".label."+symbol)
+                    self.select(".legend .label." + symbol)
                         .attr("transform", "translate(" + (0 + index * 80) + "," + (o.height + 110) + ")")
                         .attr("dy", ".35em")
                         .attr("text-anchor", "start")
@@ -150,8 +132,8 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
                         })
                         .text(symbol)
                         .on("click", function (d) {
-                            var path = d3.selectAll("g." + symbol + " .point");
-                            var label = d3.selectAll("text.label."+symbol );
+                            var path = self.selectAll("g." + symbol + " .point");
+                            var label = self.selectAll("text.label." + symbol);
                             parseInt(label.style("opacity")) ? label.style("opacity", 0.3) : label.style("opacity", 1);
                             parseInt(path.style("opacity")) ? path.style("opacity", 0) : path.style("opacity", 1);
                         });
@@ -187,7 +169,6 @@ stocksApp.directive("stockHighLowChart", ['$window', '$timeout', 'stockService',
             });
 
             scope.$watch("chartData", function (newValue, oldValue) {
-
                 plot.call(chart, {
                     data: newValue,
                     axis: {
