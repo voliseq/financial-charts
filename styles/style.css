@@ -50,7 +50,7 @@ text{
 }
 
 
-#stockInfo{
+#stockInfo, #stockDetails{
     width: 900px;
     height: 500px;
     overflow-x: hidden;
@@ -68,9 +68,12 @@ table tr:nth-child(odd) {
 table tr:nth-child(even) {
     background-color: #ffffff;
 }
-table td{
+#stockInfo table td{
     width: calc(800px/9);
 }
-#end {
+#stockDetails table td{
+    width: calc(800px/6);
+ }
+#end{
     margin-left: 20px;
 }

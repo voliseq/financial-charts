@@ -22,13 +22,8 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', 'dataService', 'd
     $scope.endDate = new Date(Math.max.apply(null, dates));
     $scope.sixMonthsBack = new Date($scope.endDate.getTime() - (86400000 * 30 * 6) );
     $scope.chartData = dataService.betweenDates($scope.rawData, $scope.sixMonthsBack, $scope.endDate);
-    $scope.selectCompany = function (company) {
-        $scope.stockData = $scope.rawData.filter(function (elem) {
-            return elem.Symbol == company;
-        });
-    };
     $scope.selected = "CSCO";
-    $scope.selectCompany($scope.selected);
+    $scope.stockData = dataService.changeCompany($scope.rawData, $scope.selected);
     $scope.options = {
         minDate: $scope.startDate,
         maxDate: $scope.endDate
@@ -43,5 +38,22 @@ var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', 'dataService', 'd
         $scope.endDate = endDate;
         $scope.chartData = dataService.betweenDates($scope.rawData, $scope.startDate, $scope.endDate);
         $scope.stockData = dataService.betweenDates($scope.rawData, $scope.startDate, $scope.endDate);
-    }
+    };
+
+    //
+    $scope.tabs = [
+        { title:'Dynamic Title 1', content:'Dynamic content 1' },
+        { title:'Dynamic Title 2', content:'Dynamic content 2', disabled: true }
+    ];
+
+    $scope.alertMe = function() {
+        setTimeout(function() {
+            $window.alert('You\'ve selected the alert tab!');
+        });
+    };
+
+    $scope.model = {
+        name: 'Tabs'
+    };
+
 }]);

@@ -18,11 +18,20 @@
         <stock-high-low-chart stock-data="stockData" chart-data="chartData"></stock-high-low-chart>
     </div>
 </div>
-<div class="row" id="stockInfo">
-    <div class="col col-xs-12">
-        <stock-info stock-data="stockData"></stock-info>
-    </div>
-</div>
-<div class="row">
+<uib-tabset active="activeJustified" justified="true">
+    <uib-tab index="0" heading="stock info">
+        <div class="row" id="stockInfo">
+            <div class="col col-xs-12">
+                <stock-info stock-data="stockData"></stock-info>
+            </div>
+        </div>
+    </uib-tab>
+    <uib-tab index="1" heading="stock details">
+        <div class="row" id="stockDetails">
+            <div class="col col-xs-12">
+                <stock-details-panel stock-data="stockData"></stock-details-panel>
+            </div>
+        </div>
+    </uib-tab>
+</uib-tabset>
 
-</div>

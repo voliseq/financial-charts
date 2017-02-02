@@ -1,0 +1,18 @@
+<table>
+    <tr>
+        <td>Symbol</td>
+        <td>Entries</td>
+        <td>Highest price</td>
+        <td>Lowest price</td>
+        <td>First price</td>
+        <td>Last price</td>
+    </tr>
+    <tr ng-repeat="x in stockDetails track by $index">
+        <td>{{ x.symbol }}</td>
+        <td>{{ x.entries }}</td>
+        <td>{{ x.highest }}</td>
+        <td>{{ x.lowest }}</td>
+        <td>{{ x.first }}</td>
+        <td>{{ x.last }}</td>
+    </tr>
+</table>

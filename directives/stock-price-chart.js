@@ -59,12 +59,7 @@ stocksApp.directive("stockPriceChart", ['$window', '$timeout', "drawingService",
                 var self = this;
 
                 drawingService.drawAxes.call(this, params);
-                var symbols = [];
-                params.data.map(function (elem) {
-                    if (symbols.indexOf(elem.Symbol) == -1) {
-                        symbols.push(elem.Symbol);
-                    }
-                });
+                var symbols = dataService.extractSymbols(params.data);
                 drawingService.initCompanies.call(this, changeCompany, symbols);
 
                 symbols.forEach(function (symbol, index) {
