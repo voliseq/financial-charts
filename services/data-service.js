@@ -1,15 +1,11 @@
-stocksApp.service('dataService', ['$http', '$q', function ($http, $q) {
+stocksApp.service('dataService', ['$http', function ($http) {
 
     var self = this;
 
     this.getData = function () {
-        var deferred = $q.defer();
-        $http.get("data.json").then(function (res) {
-            deferred.resolve({
-                res: res.data.query.results.quote
-            })
+        return $http.get("data.json").then(function (res) {
+               return res.data.query.results.quote
         });
-        return deferred.promise;
     };
 
     this.changeCompany = function (arr, symbol) {
