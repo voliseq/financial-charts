@@ -1,15 +1,9 @@
 /**
  * Created by voliseq on 28.01.2017.
  */
-var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', '$timeout', 'dataService', 'drawingService',  function ($scope, $timeout, dataService, drawingService) {
-
-    $scope.test = dataService.getData()
-        .then(function (data) {
-            console.log(data);
-        });
-
+var stocksCtrl = stocksApp.controller('stocksCtrl', ['$scope', 'dataService', 'drawingService','rawData',  function ($scope, dataService, drawingService, rawData) {
+    $scope.rawData = rawData.res;
     var dateParser = drawingService.o.dateParser;
-    $scope.rawData = rawData.query.results.quote;
     angular.forEach($scope.rawData, function (elem) {
         elem.Date = dateParser(elem.Date);
     });
