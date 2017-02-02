@@ -10,9 +10,7 @@ stocksApp.config(['$stateProvider','$urlRouterProvider', function ($stateProvide
             controller: "stocksCtrl",
             resolve:{
                 rawData: ['dataService', function(dataService){
-
                     return dataService.getData();
-
                 }]
             }
         })

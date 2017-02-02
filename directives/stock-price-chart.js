@@ -4,7 +4,7 @@
 stocksApp.directive("stockPriceChart", ['$window', '$timeout', "drawingService", 'dataService', function ($window, $timeout, drawingService, dataService) {
     return {
         restrict: "E",
-        templateUrl: 'templates/stock-price-chart.html',
+        templateUrl: 'templates/directives/stock-price-chart.html',
         replace: true,
         scope: {
             chartData: "=",

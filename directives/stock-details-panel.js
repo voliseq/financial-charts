@@ -4,7 +4,7 @@
 stocksApp.directive("stockDetailsPanel", ['$window', '$timeout', function ($window, $timeout) {
     return {
         restrict: "EA",
-        templateUrl: 'templates/stock-details-panel.html',
+        templateUrl: 'templates/directives/stock-details-panel.html',
         scope: {
             stockDetails: "="
         },

@@ -4,7 +4,7 @@
 stocksApp.directive("stockInfo", ['$window', '$timeout', function ($window, $timeout) {
     return {
         restrict: "EA",
-        templateUrl: 'templates/stock-info.html',
+        templateUrl: 'templates/directives/stock-info.html',
         scope: {
             stockData: "="
         },

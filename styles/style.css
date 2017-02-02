@@ -71,3 +71,6 @@ table tr:nth-child(even) {
 table td{
     width: calc(800px/9);
 }
+#end {
+    margin-left: 20px;
+}
