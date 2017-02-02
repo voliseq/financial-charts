@@ -52,7 +52,7 @@ stocksApp.service('dataService', ['$http', '$q', function ($http, $q) {
                 last: company[0].Close,
                 first: company[company.length - 1].Close
             })
-        })
+        });
         return results;
     }
 
