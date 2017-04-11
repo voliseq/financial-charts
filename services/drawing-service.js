@@ -1,6 +1,6 @@
 stocksApp.service('drawingService', function () {
 
-    var v = 800,
+    var v = 820,
         h = 500,
         margin = {
             top: 70,

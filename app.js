@@ -7,11 +7,6 @@ stocksApp.config(['$stateProvider','$urlRouterProvider', function ($stateProvide
         .state("stocks", {
             url: "",
             templateUrl: "templates/charts.html",
-            controller: "stocksCtrl",
-            resolve:{
-                rawData: ['dataService', function(dataService){
-                    return dataService.getData();
-                }]
-            }
+            controller: "stocksCtrl"
         })
 }]);
