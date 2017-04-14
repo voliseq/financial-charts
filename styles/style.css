@@ -1,0 +1,78 @@
+body,html{
+    margin: 0;
+    font-family: "Arial", sans-serif;
+    font-size: 0.95em;
+    text-align: center;
+}
+body{
+    padding: 50px;
+}
+.container{
+    width: 860px;
+}
+#highLow, #priceTime{
+    background-color: #F5F2EB;
+    border: 1px solid #CCC;
+}
+.axis path,
+.axis line{
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.trendline{
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 7px;
+    cursor: pointer;
+}
+
+text{
+
+    fill: black;
+    font-size: 16px;
+}
+.label{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+.stock-chart{
+    padding-bottom: 20px;
+}
+.point{
+    shape-rendering: crispEdges;
+    cursor: pointer;
+    stroke: #000;
+}
+
+
+#stockInfo, #stockDetails{
+    width: 860px;
+    height: 500px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+}
+table, th , td  {
+      border: 1px solid grey;
+      border-collapse: collapse;
+      padding: 5px;
+  }
+table tr:nth-child(odd) {
+    background-color: #f1f1f1;
+}
+table tr:nth-child(even) {
+    background-color: #ffffff;
+}
+#stockInfo table td{
+    width: calc(860px/9);
+}
+#stockDetails table td{
+    width: calc(860px/6);
+ }
+

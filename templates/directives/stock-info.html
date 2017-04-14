@@ -1,0 +1,24 @@
+<table>
+    <tr>
+        <td>Number</td>
+        <td>Symbol</td>
+        <td>Date</td>
+        <td>Open</td>
+        <td>High</td>
+        <td>Low</td>
+        <td>Close</td>
+        <td>Volume</td>
+        <td>Adj_Close</td>
+    </tr>
+    <tr ng-repeat="x in stockData track by $index">
+        <td>{{$index+1}}</td>
+        <td>{{ x.Symbol }}</td>
+        <td>{{ x.Date | date : 'dd/MM/yyyy' }}</td>
+        <td>{{ x.Open }}</td>
+        <td>{{ x.High }}</td>
+        <td>{{ x.Low }}</td>
+        <td>{{ x.Close }}</td>
+        <td>{{ x.Volume }}</td>
+        <td>{{ x.Adj_Close }}</td>
+    </tr>
+</table>
